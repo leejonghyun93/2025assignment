@@ -26,24 +26,12 @@ public class BookManager {
 			sc.nextLine();
 
 			switch (select) {
-				case 1:
-					inputBook();
-					break;
-				case 2:
-					showBookList();
-					break;
-				case 3:
-					bookUpdate();
-					break;
-				case 4:
-					bookDelete();
-					break;
-				case 5:
-					input = false;
-					break;
-				default:
+			case 1 -> inputBook();
+			case 2 -> showBookList();
+			case 3 -> bookUpdate();
+			case 4 -> bookDelete();
+			case 5 -> input = false;
 			}
-
 		}
 		System.out.println("프로그램 종료");
 	}
@@ -149,43 +137,50 @@ public class BookManager {
 		boolean updated = false;
 
 		while (true) {
-			System.out.println("수정할 항목을 선택하세요 (1. 제목 | 2. 가격 | 3. 저자 | 4. 출판일 | 5. 종료)");
+			System.out.println("수정할 항목을 선택하세요 (1. ISBN |2. 제목 | 3. 가격 | 4. 저자 | 5. 출판일 | 6. 종료)");
 			System.out.print("선택> ");
 			int choice = sc.nextInt();
-			sc.nextLine(); // 개행 문자 제거
+			sc.nextLine();
 
 			switch (choice) {
-				case 1:
-					book.setTitle(updateBookField("새로운 제목"));
+			case 1:
+				String newIsbn = getValidIsbn();
+				if (newIsbn != null) {
+					book.setIsbn(updateBookField("새로운 ISBN"));
 					updated = true;
-					break;
-				case 2:
-					int newPrice = getValidPrice();
-					if (newPrice != -1) {
-						book.setPrice(newPrice);
-						updated = true;
-					}
-					break;
-				case 3:
-					book.setAuthor(updateBookField("새로운 저자"));
+				}
+				break;
+			case 2:
+				book.setTitle(updateBookField("새로운 제목"));
+				updated = true;
+				break;
+			case 3:
+				int newPrice = getValidPrice();
+				if (newPrice != -1) {
+					book.setPrice(newPrice);
 					updated = true;
-					break;
-				case 4:
-					String newDate = getValidDate();
-					if (newDate != null) {
-						book.setPublicationDate(newDate);
-						updated = true;
-					}
-					break;
-				case 5:
-					if (updated) {
-						System.out.println("도서 정보가 성공적으로 업데이트되었습니다.");
-					} else {
-						System.out.println("변경된 내용이 없습니다.");
-					}
-					return;
-				default:
-					System.out.println("올바른 옵션을 선택하세요.");
+				}
+				break;
+			case 4:
+				book.setAuthor(updateBookField("새로운 저자"));
+				updated = true;
+				break;
+			case 5:
+				String newDate = getValidDate();
+				if (newDate != null) {
+					book.setPublicationDate(newDate);
+					updated = true;
+				}
+				break;
+			case 6:
+				if (updated) {
+					System.out.println("도서 정보가 성공적으로 업데이트되었습니다.");
+				} else {
+					System.out.println("변경된 내용이 없습니다.");
+				}
+				return;
+			default:
+				System.out.println("올바른 옵션을 선택하세요.");
 			}
 		}
 	}
@@ -199,9 +194,7 @@ public class BookManager {
 			System.out.print("삭제할 도서의 ISBN을 입력하세요: ");
 			String isbn = sc.nextLine();
 
-			// 도서가 존재하는지 확인
 			if (bookMap.containsKey(isbn)) {
-				// 도서 삭제
 				bookMap.remove(isbn);
 				System.out.println("도서가 삭제되었습니다.");
 			} else {
@@ -212,7 +205,6 @@ public class BookManager {
 			String yn = sc.nextLine();
 
 			if (yn.equalsIgnoreCase("Y")) {
-				// 전체 도서 삭제
 				bookMap.clear();
 				System.out.println("모든 도서가 삭제되었습니다.");
 			} else {
@@ -226,35 +218,42 @@ public class BookManager {
 		return sc.nextLine();
 	}
 
+	private String getValidIsbn() {
+		while (true) {
+			System.out.println("이미 사용중인 ISBN입니다.다른 ISBN으로 입력해주세요.");
+			continue;
+		}
+	}
+
 	private int getValidPrice() {
 		while (true) {
 			System.out.print("새로운 가격을 입력하세요 (5,000원 ~ 50,000원): ");
 			int price = sc.nextInt();
-			sc.nextLine(); // 개행 문자 제거
+			sc.nextLine();
 
 			if (price < 5000 || price > 50000) {
 				System.out.println("가격은 5,000원 ~ 50,000원 사이여야 합니다.");
-				continue; // 다시 입력 받도록 계속 진행
+				continue;
 			}
-			return price; // 유효한 가격이면 반환
+			return price;
 		}
 	}
 
 	private String getValidDate() {
 		while (true) {
-			System.out.print("새로운 출판일을 입력하세요 (yyyy-MM-dd): ");
+			System.out.print("새로운 출판일을 yyyy-MM-dd 형식으로 입력해주세요.: ");
 			String dateStr = sc.nextLine();
 
 			try {
 				Date date = sdf.parse(dateStr);
 				if (date.after(new Date())) {
 					System.out.println("출판일은 현재 날짜를 초과할 수 없습니다.");
-					continue; // 다시 입력 받도록 진행
+					continue;
 				}
-				return dateStr; // 유효한 날짜면 반환
+				return dateStr;
 			} catch (ParseException e) {
 				System.out.println("날짜 형식이 잘못되었습니다. yyyy-MM-dd 형식으로 입력하세요.");
-				continue; // 다시 입력 받도록 진행
+				continue;
 			}
 		}
 	}
